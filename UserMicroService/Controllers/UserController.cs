@@ -52,5 +52,16 @@ namespace UserMicroService.Controllers
             var success = await _userService.DeleteUserAsync(userId);
             return success ? NoContent() : NotFound();
         }
+
+        [HttpPost("me/upload-profile-image")]
+        public async Task<IActionResult> UploadProfileImage(IFormFile file)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null) return Unauthorized();
+
+            var imageUrl = await _userService.UploadProfileImageAsync(userId, file);
+            return Ok(new { imageUrl });
+        }
+
     }
 }

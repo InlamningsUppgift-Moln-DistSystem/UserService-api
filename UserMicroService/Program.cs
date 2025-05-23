@@ -12,9 +12,11 @@ using UserMicroService.Repositories;
 using UserMicroService.Services;
 using UserMicroService.Data;
 using UserMicroService.Configuration;
+using Azure.Storage.Blobs;
 
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSingleton(new BlobServiceClient(builder.Configuration["BlobConnectionString"]));
 
 // 1. Azure Key Vault
 string keyVaultUrl = builder.Configuration["KeyVaultUrl"];

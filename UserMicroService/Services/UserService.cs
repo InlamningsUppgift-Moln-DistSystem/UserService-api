@@ -2,16 +2,19 @@
 using UserMicroService.DTOs;
 using UserMicroService.Models;
 using UserMicroService.Repositories;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 
 namespace UserMicroService.Services
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-
-        public UserService(IUserRepository userRepository)
+        private readonly BlobServiceClient _blobServiceClient;
+        public UserService(IUserRepository userRepository, BlobServiceClient blobServiceClient)
         {
             _userRepository = userRepository;
+            _blobServiceClient = blobServiceClient;
         }
 
         public async Task<UserResponse?> GetUserAsync(string userId)
@@ -54,6 +57,28 @@ namespace UserMicroService.Services
 
             await _userRepository.DeleteAsync(user);
             return true;
+        }
+        public async Task<string> UploadProfileImageAsync(string userId, IFormFile file)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null) throw new Exception("User not found");
+
+            // 1. Blob container och namn
+            var container = _blobServiceClient.GetBlobContainerClient("profileimages");
+            var blobName = $"{userId}-{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+
+            // 2. Ladda upp
+            var blobClient = container.GetBlobClient(blobName);
+            using (var stream = file.OpenReadStream())
+            {
+                await blobClient.UploadAsync(stream, new BlobHttpHeaders { ContentType = file.ContentType });
+            }
+
+            // 3. Spara URL i användaren
+            user.ProfileImageUrl = blobClient.Uri.ToString();
+            await _userRepository.UpdateAsync(user);
+
+            return user.ProfileImageUrl!;
         }
     }
 }

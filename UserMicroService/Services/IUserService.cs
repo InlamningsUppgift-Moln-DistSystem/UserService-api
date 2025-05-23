@@ -8,5 +8,7 @@ namespace UserMicroService.Services
         Task<UserResponse?> GetUserAsync(string userId);
         Task<bool> UpdateUserAsync(string userId, UpdateUserRequest request);
         Task<bool> DeleteUserAsync(string userId);
+        Task<string> UploadProfileImageAsync(string userId, IFormFile file);
+
     }
 }
