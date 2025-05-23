@@ -16,13 +16,15 @@ using Azure.Storage.Blobs;
 
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddSingleton(new BlobServiceClient(builder.Configuration["BlobConnectionString"]));
 
-// 1. Azure Key Vault
+// 1. Azure Key Vault (LÄS IN FÖRST!)
 string keyVaultUrl = builder.Configuration["KeyVaultUrl"];
 builder.Configuration.AddAzureKeyVault(new Uri(keyVaultUrl), new DefaultAzureCredential());
 
-// 2. Läs JWT Settings
+// 2. Blob Storage
+builder.Services.AddSingleton(new BlobServiceClient(builder.Configuration["BlobConnectionString"]));
+
+// 3. Läs JWT Settings
 var jwtSecret = builder.Configuration["Jwt-Secret"];
 var jwtIssuer = builder.Configuration["JwtSettings:Issuer"];
 var jwtAudience = builder.Configuration["JwtSettings:Audience"];
@@ -31,7 +33,7 @@ Console.WriteLine($"Jwt-Secret: {(string.IsNullOrEmpty(jwtSecret) ? "NULL" : "LO
 Console.WriteLine($"Jwt-Issuer: {jwtIssuer}");
 Console.WriteLine($"Jwt-Audience: {jwtAudience}");
 
-// 3. Setup JWT Settings
+// 4. Setup JWT Settings
 builder.Services.Configure<JwtSettings>(options =>
 {
     options.Secret = jwtSecret;
@@ -39,7 +41,7 @@ builder.Services.Configure<JwtSettings>(options =>
     options.Audience = jwtAudience;
 });
 
-// 4. CORS
+// 5. CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -50,16 +52,16 @@ builder.Services.AddCors(options =>
     });
 });
 
-// 5. DbContext
+// 6. DbContext
 builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseSqlServer(builder.Configuration["DefaultConnection"]));
 
-// 6. Identity
+// 7. Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AuthDbContext>()
     .AddDefaultTokenProviders();
 
-// 7. JWT Authentication
+// 8. JWT Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -79,11 +81,11 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// 8. Dependency Injection
+// 9. Dependency Injection
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-// 9. Swagger
+// 10. Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -116,7 +118,7 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// 10. Middleware
+// 11. Middleware
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -125,12 +127,9 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseHttpsRedirection();
-
 app.UseCors("AllowFrontend");
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
 app.Run();
