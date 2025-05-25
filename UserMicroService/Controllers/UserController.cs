@@ -33,14 +33,34 @@ namespace UserMicroService.Controllers
             return user != null ? Ok(user) : NotFound();
         }
 
-        [HttpPut("me")]
-        public async Task<IActionResult> UpdateMyProfile(UpdateUserRequest request)
+        [HttpPut("me/username")]
+        public async Task<IActionResult> UpdateUsername([FromBody] string username)
         {
             var userId = GetUserId();
             if (userId == null) return Unauthorized();
 
-            var success = await _userService.UpdateUserAsync(userId, request);
-            return success ? NoContent() : NotFound();
+            var (success, errors) = await _userService.UpdateUsernameAsync(userId, username);
+            return success ? NoContent() : BadRequest(errors);
+        }
+
+        [HttpPut("me/email")]
+        public async Task<IActionResult> UpdateEmail([FromBody] string email)
+        {
+            var userId = GetUserId();
+            if (userId == null) return Unauthorized();
+
+            var (success, errors) = await _userService.UpdateEmailAsync(userId, email);
+            return success ? NoContent() : BadRequest(errors);
+        }
+
+        [HttpPut("me/password")]
+        public async Task<IActionResult> UpdatePassword(UpdatePasswordRequest request)
+        {
+            var userId = GetUserId();
+            if (userId == null) return Unauthorized();
+
+            var (success, errors) = await _userService.UpdatePasswordAsync(userId, request);
+            return success ? NoContent() : BadRequest(errors);
         }
 
         [HttpDelete("me")]
@@ -56,12 +76,18 @@ namespace UserMicroService.Controllers
         [HttpPost("me/upload-profile-image")]
         public async Task<IActionResult> UploadProfileImage(IFormFile file)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = GetUserId();
             if (userId == null) return Unauthorized();
 
-            var imageUrl = await _userService.UploadProfileImageAsync(userId, file);
-            return Ok(new { imageUrl });
+            try
+            {
+                var imageUrl = await _userService.UploadProfileImageAsync(userId, file);
+                return Ok(new { imageUrl });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
-
     }
 }

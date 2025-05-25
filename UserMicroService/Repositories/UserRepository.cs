@@ -1,4 +1,4 @@
-﻿// Repositories/UserRepository.cs
+﻿// UserRepository.cs
 using Microsoft.AspNetCore.Identity;
 using UserMicroService.Models;
 
@@ -13,9 +13,30 @@ namespace UserMicroService.Repositories
             _userManager = userManager;
         }
 
-        public async Task<ApplicationUser?> GetByIdAsync(string userId)
+        public Task<ApplicationUser?> GetByIdAsync(string userId)
         {
-            return await _userManager.FindByIdAsync(userId);
+            return _userManager.FindByIdAsync(userId);
+        }
+
+        public Task<ApplicationUser?> GetByUsernameAsync(string username)
+        {
+            return _userManager.FindByNameAsync(username);
+        }
+
+        public Task<ApplicationUser?> GetByEmailAsync(string email)
+        {
+            return _userManager.FindByEmailAsync(email);
+        }
+
+        public Task<bool> CheckPasswordAsync(ApplicationUser user, string password)
+        {
+            return _userManager.CheckPasswordAsync(user, password);
+        }
+
+        public async Task UpdatePasswordAsync(ApplicationUser user, string newPassword)
+        {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            await _userManager.ResetPasswordAsync(user, token, newPassword);
         }
 
         public async Task UpdateAsync(ApplicationUser user)

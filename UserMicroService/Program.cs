@@ -19,6 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // 1. Azure Key Vault (LÄS IN FÖRST!)
 string keyVaultUrl = builder.Configuration["KeyVaultUrl"];
+
 builder.Configuration.AddAzureKeyVault(new Uri(keyVaultUrl), new DefaultAzureCredential());
 
 // 2. Blob Storage
