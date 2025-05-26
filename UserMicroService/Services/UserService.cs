@@ -179,5 +179,16 @@ namespace UserMicroService.Services
 
             return user.ProfileImageUrl!;
         }
+        public async Task<bool> ConfirmEmailAsync(string email)
+        {
+            var user = await _userRepository.GetByEmailAsync(email);
+            if (user == null || user.EmailConfirmed) return false;
+
+            user.EmailConfirmed = true;
+            await _userRepository.UpdateAsync(user);
+
+            return true;
+        }
+
     }
 }

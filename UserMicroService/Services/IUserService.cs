@@ -11,5 +11,7 @@ namespace UserMicroService.Services
         Task<(bool success, Dictionary<string, string> errors)> UpdatePasswordAsync(string userId, UpdatePasswordRequest request);
         Task<bool> DeleteUserAsync(string userId);
         Task<string> UploadProfileImageAsync(string userId, IFormFile file);
+        Task<bool> ConfirmEmailAsync(string email);
+
     }
 }
