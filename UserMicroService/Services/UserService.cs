@@ -73,6 +73,7 @@ namespace UserMicroService.Services
             if (user == null)
                 return (false, new() { { "general", "User not found." } });
 
+            // Validering av e-post
             if (string.IsNullOrWhiteSpace(email))
                 errors["email"] = "Email is required.";
             else if (!Regex.IsMatch(email, @"^\S+@\S+\.\S+$"))
@@ -86,7 +87,13 @@ namespace UserMicroService.Services
 
             if (errors.Any()) return (false, errors);
 
-            // 🔹 Skapa URL till bekräftelsesidan (frontend)
+            // 🔹 Uppdatera användaren
+            user.Email = email;
+            user.EmailConfirmed = false; // Viktigt om du har verifieringsflöde
+
+            await _userRepository.UpdateAsync(user);
+
+            // 🔹 Skicka bekräftelselänk via EmailService
             var confirmUrl = $"https://jolly-river-05ee55f03.6.azurestaticapps.net/confirm-new-email?email={Uri.EscapeDataString(email)}";
 
             var payload = new
@@ -105,6 +112,7 @@ namespace UserMicroService.Services
 
             return (true, new());
         }
+
 
 
         public async Task<(bool, Dictionary<string, string>)> UpdatePasswordAsync(string userId, UpdatePasswordRequest request)
