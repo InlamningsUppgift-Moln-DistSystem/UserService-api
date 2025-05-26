@@ -45,14 +45,15 @@ namespace UserMicroService.Controllers
         }
 
         [HttpPut("me/email")]
-        public async Task<IActionResult> UpdateEmail([FromBody] string email)
+        public async Task<IActionResult> UpdateEmail([FromBody] UpdateEmailRequest request)
         {
             var userId = GetUserId();
             if (userId == null) return Unauthorized();
 
-            var (success, errors) = await _userService.UpdateEmailAsync(userId, email);
+            var (success, errors) = await _userService.UpdateEmailAsync(userId, request.Email);
             return success ? NoContent() : BadRequest(errors);
         }
+
 
         [HttpPut("me/password")]
         public async Task<IActionResult> UpdatePassword(UpdatePasswordRequest request)
