@@ -1,4 +1,3 @@
-// Program.cs
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -7,34 +6,27 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using Azure.Identity;
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Storage.Blobs;
 using UserMicroService.Models;
 using UserMicroService.Repositories;
 using UserMicroService.Services;
 using UserMicroService.Data;
 using UserMicroService.Configuration;
-using Azure.Storage.Blobs;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Azure Key Vault (LÄS IN FÖRST!)
+// 1. Key Vault (Ladda konfiguration tidigt!)
 string keyVaultUrl = builder.Configuration["KeyVaultUrl"];
-
 builder.Configuration.AddAzureKeyVault(new Uri(keyVaultUrl), new DefaultAzureCredential());
 
-// 2. Blob Storage
+// 2. Azure Blob Storage
 builder.Services.AddSingleton(new BlobServiceClient(builder.Configuration["BlobConnectionString"]));
 
-// 3. Läs JWT Settings
+// 3. JWT-konfiguration
 var jwtSecret = builder.Configuration["Jwt-Secret"];
 var jwtIssuer = builder.Configuration["JwtSettings:Issuer"];
 var jwtAudience = builder.Configuration["JwtSettings:Audience"];
 
-Console.WriteLine($"Jwt-Secret: {(string.IsNullOrEmpty(jwtSecret) ? "NULL" : "LOADED")}");
-Console.WriteLine($"Jwt-Issuer: {jwtIssuer}");
-Console.WriteLine($"Jwt-Audience: {jwtAudience}");
-
-// 4. Setup JWT Settings
 builder.Services.Configure<JwtSettings>(options =>
 {
     options.Secret = jwtSecret;
@@ -42,7 +34,7 @@ builder.Services.Configure<JwtSettings>(options =>
     options.Audience = jwtAudience;
 });
 
-// 5. CORS
+// 4. CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -53,16 +45,16 @@ builder.Services.AddCors(options =>
     });
 });
 
-// 6. DbContext
+// 5. DbContext
 builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseSqlServer(builder.Configuration["DefaultConnection"]));
 
-// 7. Identity
+// 6. Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AuthDbContext>()
     .AddDefaultTokenProviders();
 
-// 8. JWT Authentication
+// 7. JWT Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -80,6 +72,12 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtAudience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
     };
+});
+
+// 8. HTTP Client för EmailService
+builder.Services.AddHttpClient("EmailService", client =>
+{
+    client.BaseAddress = new Uri("https://emailservice-api-e4c5b9cnfxehg6h8.swedencentral-01.azurewebsites.net");
 });
 
 // 9. Dependency Injection
@@ -119,7 +117,7 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// 11. Middleware
+// 11. Middleware pipeline
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -131,6 +129,6 @@ app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
+
 app.Run();

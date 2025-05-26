@@ -12,12 +12,18 @@ namespace UserMicroService.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly BlobServiceClient _blobServiceClient;
+        private readonly HttpClient _httpClient;
 
-        public UserService(IUserRepository userRepository, BlobServiceClient blobServiceClient)
+        public UserService(
+            IUserRepository userRepository,
+            BlobServiceClient blobServiceClient,
+            HttpClient httpClient)
         {
             _userRepository = userRepository;
             _blobServiceClient = blobServiceClient;
+            _httpClient = httpClient;
         }
+
 
         public async Task<UserResponse?> GetUserAsync(string userId)
         {
@@ -64,23 +70,42 @@ namespace UserMicroService.Services
         {
             var errors = new Dictionary<string, string>();
             var user = await _userRepository.GetByIdAsync(userId);
-            if (user == null) return (false, new() { { "general", "User not found." } });
+            if (user == null)
+                return (false, new() { { "general", "User not found." } });
 
             if (string.IsNullOrWhiteSpace(email))
                 errors["email"] = "Email is required.";
-            else if (!Regex.IsMatch(email, "^\\S+@\\S+\\.\\S+$"))
+            else if (!Regex.IsMatch(email, @"^\S+@\S+\.\S+$"))
                 errors["email"] = "Invalid email format.";
             else
             {
-                var otherUser = await _userRepository.GetByEmailAsync(email);
-                if (otherUser != null && otherUser.Id != user.Id)
+                var existing = await _userRepository.GetByEmailAsync(email);
+                if (existing != null && existing.Id != user.Id)
                     errors["email"] = "Email is already in use.";
-                else
-                    errors["email"] = "Email change requires confirmation."; // TODO: handle confirmation
             }
 
-            return (errors.Any() ? (false, errors) : (true, new()));
+            if (errors.Any()) return (false, errors);
+
+            // 🔹 Skapa URL till bekräftelsesidan (frontend)
+            var confirmUrl = $"https://jolly-river-05ee55f03.6.azurestaticapps.net/confirm-new-email?email={Uri.EscapeDataString(email)}";
+
+            var payload = new
+            {
+                to = email,
+                confirmationUrl = confirmUrl
+            };
+
+            var response = await _httpClient.PostAsJsonAsync("api/Email/send-confirm-email-update", payload);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                errors["email"] = "Failed to send confirmation email.";
+                return (false, errors);
+            }
+
+            return (true, new());
         }
+
 
         public async Task<(bool, Dictionary<string, string>)> UpdatePasswordAsync(string userId, UpdatePasswordRequest request)
         {
