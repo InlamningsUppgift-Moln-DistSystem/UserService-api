@@ -91,12 +91,14 @@ namespace UserMicroService.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+        [AllowAnonymous]
         [HttpPost("confirm-email")]
         public async Task<IActionResult> ConfirmEmail([FromQuery] string email)
         {
             var success = await _userService.ConfirmEmailAsync(email);
             return success ? Ok("Email confirmed.") : BadRequest("Invalid or already confirmed.");
         }
+
 
     }
 }
