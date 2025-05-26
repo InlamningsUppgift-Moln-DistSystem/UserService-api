@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using UserMicroService.DTOs;
 using UserMicroService.Services;
+using System.Threading.Tasks;
 
 namespace UserMicroService.Controllers
 {
