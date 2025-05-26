@@ -15,14 +15,14 @@ using UserMicroService.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Key Vault (Ladda konfiguration tidigt!)
+// 1. Key Vault – Laddas tidigt
 string keyVaultUrl = builder.Configuration["KeyVaultUrl"];
 builder.Configuration.AddAzureKeyVault(new Uri(keyVaultUrl), new DefaultAzureCredential());
 
-// 2. Azure Blob Storage
+// 2. Blob Storage
 builder.Services.AddSingleton(new BlobServiceClient(builder.Configuration["BlobConnectionString"]));
 
-// 3. JWT-konfiguration
+// 3. JWT-inställningar
 var jwtSecret = builder.Configuration["Jwt-Secret"];
 var jwtIssuer = builder.Configuration["JwtSettings:Issuer"];
 var jwtAudience = builder.Configuration["JwtSettings:Audience"];
@@ -74,15 +74,15 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// 8. HTTP Client för EmailService
-builder.Services.AddHttpClient("EmailService", client =>
+// 8. HttpClient – knyter ihop IUserService med EmailService API
+builder.Services.AddHttpClient<IUserService, UserService>(client =>
 {
-    client.BaseAddress = new Uri("https://emailservice-api-e4c5b9cnfxehg6h8.swedencentral-01.azurewebsites.net");
+    var emailApiBaseUrl = builder.Configuration["EmailService:BaseUrl"];
+    client.BaseAddress = new Uri(emailApiBaseUrl);
 });
 
-// 9. Dependency Injection
+// 9. Repositories och övriga DI
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
 
 // 10. Swagger
 builder.Services.AddControllers();
@@ -115,9 +115,9 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// 11. Pipeline
 var app = builder.Build();
 
-// 11. Middleware pipeline
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -130,5 +130,4 @@ app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
 app.Run();
