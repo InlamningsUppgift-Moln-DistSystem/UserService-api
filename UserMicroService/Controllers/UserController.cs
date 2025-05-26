@@ -74,7 +74,7 @@ namespace UserMicroService.Controllers
         }
 
         [HttpPost("me/upload-profile-image")]
-        public async Task<IActionResult> UploadProfileImage(IFormFile file)
+        public async Task<IActionResult> UploadProfileImage([FromForm] IFormFile file)
         {
             var userId = GetUserId();
             if (userId == null) return Unauthorized();
