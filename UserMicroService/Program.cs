@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+ï»¿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -15,14 +15,14 @@ using UserMicroService.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Key Vault – Laddas tidigt
+// 1. Key Vault â€“ laddas tidigt
 string keyVaultUrl = builder.Configuration["KeyVaultUrl"];
 builder.Configuration.AddAzureKeyVault(new Uri(keyVaultUrl), new DefaultAzureCredential());
 
 // 2. Blob Storage
 builder.Services.AddSingleton(new BlobServiceClient(builder.Configuration["BlobConnectionString"]));
 
-// 3. JWT-inställningar
+// 3. JWT-instÃ¤llningar
 var jwtSecret = builder.Configuration["Jwt-Secret"];
 var jwtIssuer = builder.Configuration["JwtSettings:Issuer"];
 var jwtAudience = builder.Configuration["JwtSettings:Audience"];
@@ -74,17 +74,14 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// 8. HttpClient – knyter ihop IUserService med EmailService API
-builder.Services.AddHttpClient<IUserService, UserService>(client =>
-{
-    var emailApiBaseUrl = builder.Configuration["EmailService:BaseUrl"];
-    client.BaseAddress = new Uri(emailApiBaseUrl);
-});
-
-// 9. Repositories och övriga DI
+// 8. Dependency Injection
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 
-// 10. Swagger
+// âœ… LÃ¤gg till EmailQueueService (Service Bus via Key Vault)
+builder.Services.AddScoped<IEmailQueueService, EmailQueueService>();
+
+// 9. Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -115,7 +112,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// 11. Pipeline
+// 10. Pipeline
 var app = builder.Build();
 
 app.UseSwagger();

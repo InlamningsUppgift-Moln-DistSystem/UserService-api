@@ -34,34 +34,13 @@ namespace UserMicroService.Controllers
             return user != null ? Ok(user) : NotFound();
         }
 
-        [HttpPut("me/username")]
-        public async Task<IActionResult> UpdateUsername([FromBody] string username)
+        [HttpPatch("me")]
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
         {
             var userId = GetUserId();
             if (userId == null) return Unauthorized();
 
-            var (success, errors) = await _userService.UpdateUsernameAsync(userId, username);
-            return success ? NoContent() : BadRequest(errors);
-        }
-
-        [HttpPut("me/email")]
-        public async Task<IActionResult> UpdateEmail([FromBody] UpdateEmailRequest request)
-        {
-            var userId = GetUserId();
-            if (userId == null) return Unauthorized();
-
-            var (success, errors) = await _userService.UpdateEmailAsync(userId, request.Email);
-            return success ? NoContent() : BadRequest(errors);
-        }
-
-
-        [HttpPut("me/password")]
-        public async Task<IActionResult> UpdatePassword(UpdatePasswordRequest request)
-        {
-            var userId = GetUserId();
-            if (userId == null) return Unauthorized();
-
-            var (success, errors) = await _userService.UpdatePasswordAsync(userId, request);
+            var (success, errors) = await _userService.UpdateUserAsync(userId, request);
             return success ? NoContent() : BadRequest(errors);
         }
 
@@ -75,7 +54,7 @@ namespace UserMicroService.Controllers
             return success ? NoContent() : NotFound();
         }
 
-        [HttpPost("me/upload-profile-image")]
+        [HttpPut("me/upload-profile-image")]
         public async Task<IActionResult> UploadProfileImage([FromForm] IFormFile file)
         {
             var userId = GetUserId();
@@ -83,7 +62,7 @@ namespace UserMicroService.Controllers
 
             try
             {
-                var imageUrl = await _userService.UploadProfileImageAsync(userId, file);
+                var imageUrl = await _userService.UploadProfileImageAsync(userId, file, deleteOldImage: true);
                 return Ok(new { imageUrl });
             }
             catch (Exception ex)
@@ -91,6 +70,7 @@ namespace UserMicroService.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+
         [AllowAnonymous]
         [HttpPost("confirm-email")]
         public async Task<IActionResult> ConfirmEmail([FromQuery] string email)
@@ -98,7 +78,5 @@ namespace UserMicroService.Controllers
             var success = await _userService.ConfirmEmailAsync(email);
             return success ? Ok("Email confirmed.") : BadRequest("Invalid or already confirmed.");
         }
-
-
     }
 }

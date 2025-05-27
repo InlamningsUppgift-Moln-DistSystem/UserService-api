@@ -1,5 +1,4 @@
-﻿// UserService.cs
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using UserMicroService.DTOs;
 using UserMicroService.Models;
 using UserMicroService.Repositories;
@@ -12,18 +11,17 @@ namespace UserMicroService.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly BlobServiceClient _blobServiceClient;
-        private readonly HttpClient _httpClient;
+        private readonly IEmailQueueService _emailQueue;
 
         public UserService(
             IUserRepository userRepository,
             BlobServiceClient blobServiceClient,
-            HttpClient httpClient)
+            IEmailQueueService emailQueue)
         {
             _userRepository = userRepository;
             _blobServiceClient = blobServiceClient;
-            _httpClient = httpClient;
+            _emailQueue = emailQueue;
         }
-
 
         public async Task<UserResponse?> GetUserAsync(string userId)
         {
@@ -40,105 +38,91 @@ namespace UserMicroService.Services
             };
         }
 
-        public async Task<(bool, Dictionary<string, string>)> UpdateUsernameAsync(string userId, string username)
-        {
-            var errors = new Dictionary<string, string>();
-            var user = await _userRepository.GetByIdAsync(userId);
-            if (user == null) return (false, new() { { "general", "User not found." } });
-
-            if (string.IsNullOrWhiteSpace(username))
-                errors["username"] = "Username is required.";
-            else if (username.Length < 3 || username.Length > 20)
-                errors["username"] = "Username must be between 3 and 20 characters.";
-            else if (!Regex.IsMatch(username, "^[a-zA-Z0-9_]+$"))
-                errors["username"] = "Only letters, numbers and underscores (_) are allowed.";
-            else
-            {
-                var otherUser = await _userRepository.GetByUsernameAsync(username);
-                if (otherUser != null && otherUser.Id != user.Id)
-                    errors["username"] = "Username is already taken.";
-                else
-                    user.UserName = username;
-            }
-
-            if (errors.Any()) return (false, errors);
-            await _userRepository.UpdateAsync(user);
-            return (true, new());
-        }
-
-        public async Task<(bool, Dictionary<string, string>)> UpdateEmailAsync(string userId, string email)
+        public async Task<(bool, Dictionary<string, string>)> UpdateUserAsync(string userId, UpdateUserRequest request)
         {
             var errors = new Dictionary<string, string>();
             var user = await _userRepository.GetByIdAsync(userId);
             if (user == null)
                 return (false, new() { { "general", "User not found." } });
 
-            // Validering av e-post
-            if (string.IsNullOrWhiteSpace(email))
-                errors["email"] = "Email is required.";
-            else if (!Regex.IsMatch(email, @"^\S+@\S+\.\S+$"))
-                errors["email"] = "Invalid email format.";
-            else
+            // Username
+            if (!string.IsNullOrWhiteSpace(request.Username))
             {
-                var existing = await _userRepository.GetByEmailAsync(email);
-                if (existing != null && existing.Id != user.Id)
-                    errors["email"] = "Email is already in use.";
+                if (request.Username.Length < 3 || request.Username.Length > 20)
+                    errors["username"] = "Username must be between 3 and 20 characters.";
+                else if (!Regex.IsMatch(request.Username, "^[a-zA-Z0-9_]+$"))
+                    errors["username"] = "Only letters, numbers and underscores (_) are allowed.";
+                else
+                {
+                    var other = await _userRepository.GetByUsernameAsync(request.Username);
+                    if (other != null && other.Id != user.Id)
+                        errors["username"] = "Username is already taken.";
+                    else
+                        user.UserName = request.Username;
+                }
+            }
+
+            // Email
+            if (!string.IsNullOrWhiteSpace(request.Email))
+            {
+                if (!Regex.IsMatch(request.Email, @"^\S+@\S+\.\S+$"))
+                    errors["email"] = "Invalid email format.";
+                else
+                {
+                    var existing = await _userRepository.GetByEmailAsync(request.Email);
+                    if (existing != null && existing.Id != user.Id)
+                        errors["email"] = "Email is already in use.";
+                    else
+                    {
+                        user.Email = request.Email;
+                        user.EmailConfirmed = false;
+
+                        var confirmUrl = $"https://jolly-river-05ee55f03.6.azurestaticapps.net/confirm-new-email?email={Uri.EscapeDataString(request.Email)}";
+
+                        var emailMessage = new EmailMessageDto
+                        {
+                            To = request.Email,
+                            Subject = "Confirm your new email address",
+                            Body = $"Click here to confirm your new email: {confirmUrl}"
+                        };
+
+                        try
+                        {
+                            await _emailQueue.SendEmailAsync(emailMessage);
+                        }
+                        catch (Exception ex)
+                        {
+                            errors["email"] = "Failed to queue confirmation email: " + ex.Message;
+                        }
+                    }
+                }
+            }
+
+            // Password
+            if (!string.IsNullOrWhiteSpace(request.NewPassword))
+            {
+                if (string.IsNullOrWhiteSpace(request.CurrentPassword))
+                    errors["currentPassword"] = "Current password is required.";
+                else if (!await _userRepository.CheckPasswordAsync(user, request.CurrentPassword))
+                    errors["currentPassword"] = "Incorrect current password.";
+
+                if (request.NewPassword.Length < 8 ||
+                    !Regex.IsMatch(request.NewPassword, "[A-Z]") ||
+                    !Regex.IsMatch(request.NewPassword, "[a-z]") ||
+                    !Regex.IsMatch(request.NewPassword, "[0-9]") ||
+                    !Regex.IsMatch(request.NewPassword, "[^a-zA-Z0-9]"))
+                    errors["newPassword"] = "Password must include uppercase, lowercase, number, and special character.";
+
+                if (request.NewPassword != request.ConfirmPassword)
+                    errors["confirmPassword"] = "Password confirmation does not match.";
+
+                if (!errors.Any(e => e.Key.StartsWith("currentPassword") || e.Key.StartsWith("newPassword")))
+                    await _userRepository.UpdatePasswordAsync(user, request.NewPassword);
             }
 
             if (errors.Any()) return (false, errors);
-
-            // 🔹 Uppdatera användaren
-            user.Email = email;
-            user.EmailConfirmed = false; // Viktigt om du har verifieringsflöde
 
             await _userRepository.UpdateAsync(user);
-
-            // 🔹 Skicka bekräftelselänk via EmailService
-            var confirmUrl = $"https://jolly-river-05ee55f03.6.azurestaticapps.net/confirm-new-email?email={Uri.EscapeDataString(email)}";
-
-            var payload = new
-            {
-                to = email,
-                confirmationUrl = confirmUrl
-            };
-
-            var response = await _httpClient.PostAsJsonAsync("api/Email/send-confirm-email-update", payload);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                errors["email"] = "Failed to send confirmation email.";
-                return (false, errors);
-            }
-
-            return (true, new());
-        }
-
-
-
-        public async Task<(bool, Dictionary<string, string>)> UpdatePasswordAsync(string userId, UpdatePasswordRequest request)
-        {
-            var errors = new Dictionary<string, string>();
-            if (string.IsNullOrWhiteSpace(request.CurrentPassword))
-                errors["currentPassword"] = "Current password is required.";
-            if (string.IsNullOrWhiteSpace(request.NewPassword))
-                errors["newPassword"] = "New password is required.";
-            else if (request.NewPassword.Length < 8 ||
-                     !Regex.IsMatch(request.NewPassword, "[A-Z]") ||
-                     !Regex.IsMatch(request.NewPassword, "[a-z]") ||
-                     !Regex.IsMatch(request.NewPassword, "[0-9]") ||
-                     !Regex.IsMatch(request.NewPassword, "[^a-zA-Z0-9]"))
-                errors["newPassword"] = "Password must be at least 8 characters and include uppercase, lowercase, number, and special character.";
-            if (request.NewPassword != request.ConfirmPassword)
-                errors["confirmPassword"] = "Password confirmation does not match.";
-
-            var user = await _userRepository.GetByIdAsync(userId);
-            if (user == null) return (false, new() { { "general", "User not found." } });
-            if (!await _userRepository.CheckPasswordAsync(user, request.CurrentPassword))
-                errors["currentPassword"] = "Incorrect current password.";
-
-            if (errors.Any()) return (false, errors);
-
-            await _userRepository.UpdatePasswordAsync(user, request.NewPassword);
             return (true, new());
         }
 
@@ -150,7 +134,7 @@ namespace UserMicroService.Services
             return true;
         }
 
-        public async Task<string> UploadProfileImageAsync(string userId, IFormFile file)
+        public async Task<string> UploadProfileImageAsync(string userId, IFormFile file, bool deleteOldImage = false)
         {
             var user = await _userRepository.GetByIdAsync(userId);
             if (user == null) throw new Exception("User not found");
@@ -166,6 +150,15 @@ namespace UserMicroService.Services
                 throw new Exception("Invalid file format. Only .jpg, .jpeg, and .png are allowed.");
 
             var container = _blobServiceClient.GetBlobContainerClient("profileimages");
+
+            if (deleteOldImage && !string.IsNullOrEmpty(user.ProfileImageUrl))
+            {
+                var uri = new Uri(user.ProfileImageUrl);
+                var oldBlobName = Path.GetFileName(uri.LocalPath);
+                var oldBlob = container.GetBlobClient(oldBlobName);
+                await oldBlob.DeleteIfExistsAsync();
+            }
+
             var blobName = $"{userId}-{Guid.NewGuid()}{extension}";
             var blobClient = container.GetBlobClient(blobName);
 
@@ -179,6 +172,7 @@ namespace UserMicroService.Services
 
             return user.ProfileImageUrl!;
         }
+
         public async Task<bool> ConfirmEmailAsync(string email)
         {
             var user = await _userRepository.GetByEmailAsync(email);
@@ -189,6 +183,5 @@ namespace UserMicroService.Services
 
             return true;
         }
-
     }
 }
