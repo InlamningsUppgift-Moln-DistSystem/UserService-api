@@ -83,8 +83,15 @@ namespace UserMicroService.Services
                         {
                             To = request.Email,
                             Subject = "Confirm your new email address",
-                            Body = $"Click here to confirm your new email: {confirmUrl}"
+                            Body = $"""
+<p>Hi {request.Email.Split('@')[0]},</p>
+<p>Please confirm your account by clicking the link below:</p>
+<p><a href="{confirmUrl}">{confirmUrl}</a></p>
+<br/>
+<p>Ventixe Team</p>
+"""
                         };
+
 
                         try
                         {

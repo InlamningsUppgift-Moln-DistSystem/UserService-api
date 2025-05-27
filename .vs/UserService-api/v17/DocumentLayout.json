@@ -7,6 +7,22 @@
       "RelativeMoniker": "D:0:0:{C1AAB0ED-AA3C-47AE-9B2C-3632A0F97151}|UserMicroService\\UserMicroService.csproj|solutionrelative:usermicroservice\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{C1AAB0ED-AA3C-47AE-9B2C-3632A0F97151}|UserMicroService\\UserMicroService.csproj|c:\\users\\kevinswa\\source\\repos\\userservice-api\\usermicroservice\\services\\emailqueueservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1AAB0ED-AA3C-47AE-9B2C-3632A0F97151}|UserMicroService\\UserMicroService.csproj|solutionrelative:usermicroservice\\services\\emailqueueservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1AAB0ED-AA3C-47AE-9B2C-3632A0F97151}|UserMicroService\\UserMicroService.csproj|c:\\users\\kevinswa\\source\\repos\\userservice-api\\usermicroservice\\dtos\\emailmessagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1AAB0ED-AA3C-47AE-9B2C-3632A0F97151}|UserMicroService\\UserMicroService.csproj|solutionrelative:usermicroservice\\dtos\\emailmessagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1AAB0ED-AA3C-47AE-9B2C-3632A0F97151}|UserMicroService\\UserMicroService.csproj|c:\\users\\kevinswa\\source\\repos\\userservice-api\\usermicroservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1AAB0ED-AA3C-47AE-9B2C-3632A0F97151}|UserMicroService\\UserMicroService.csproj|solutionrelative:usermicroservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1AAB0ED-AA3C-47AE-9B2C-3632A0F97151}|UserMicroService\\UserMicroService.csproj|c:\\users\\kevinswa\\source\\repos\\userservice-api\\usermicroservice\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{C1AAB0ED-AA3C-47AE-9B2C-3632A0F97151}|UserMicroService\\UserMicroService.csproj|solutionrelative:usermicroservice\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{C1AAB0ED-AA3C-47AE-9B2C-3632A0F97151}|UserMicroService\\UserMicroService.csproj|c:\\users\\kevinswa\\source\\repos\\userservice-api\\usermicroservice\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C1AAB0ED-AA3C-47AE-9B2C-3632A0F97151}|UserMicroService\\UserMicroService.csproj|solutionrelative:usermicroservice\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -19,20 +35,8 @@
       "RelativeMoniker": "D:0:0:{C1AAB0ED-AA3C-47AE-9B2C-3632A0F97151}|UserMicroService\\UserMicroService.csproj|solutionrelative:usermicroservice\\services\\iuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C1AAB0ED-AA3C-47AE-9B2C-3632A0F97151}|UserMicroService\\UserMicroService.csproj|c:\\users\\kevinswa\\source\\repos\\userservice-api\\usermicroservice\\services\\emailqueueservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1AAB0ED-AA3C-47AE-9B2C-3632A0F97151}|UserMicroService\\UserMicroService.csproj|solutionrelative:usermicroservice\\services\\emailqueueservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{C1AAB0ED-AA3C-47AE-9B2C-3632A0F97151}|UserMicroService\\UserMicroService.csproj|c:\\users\\kevinswa\\source\\repos\\userservice-api\\usermicroservice\\services\\iemailqueueservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C1AAB0ED-AA3C-47AE-9B2C-3632A0F97151}|UserMicroService\\UserMicroService.csproj|solutionrelative:usermicroservice\\services\\iemailqueueservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1AAB0ED-AA3C-47AE-9B2C-3632A0F97151}|UserMicroService\\UserMicroService.csproj|c:\\users\\kevinswa\\source\\repos\\userservice-api\\usermicroservice\\dtos\\emailmessagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1AAB0ED-AA3C-47AE-9B2C-3632A0F97151}|UserMicroService\\UserMicroService.csproj|solutionrelative:usermicroservice\\dtos\\emailmessagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1AAB0ED-AA3C-47AE-9B2C-3632A0F97151}|UserMicroService\\UserMicroService.csproj|c:\\users\\kevinswa\\source\\repos\\userservice-api\\usermicroservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1AAB0ED-AA3C-47AE-9B2C-3632A0F97151}|UserMicroService\\UserMicroService.csproj|solutionrelative:usermicroservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -42,7 +46,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 11,
+          "SelectedChildIndex": 12,
           "Children": [
             {
               "$type": "Bookmark",
@@ -70,7 +74,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\kevinswa\\source\\repos\\UserService-api\\UserMicroService\\appsettings.json",
+              "RelativeDocumentMoniker": "UserMicroService\\appsettings.json",
+              "ToolTip": "C:\\Users\\kevinswa\\source\\repos\\UserService-api\\UserMicroService\\appsettings.json",
+              "RelativeToolTip": "UserMicroService\\appsettings.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-05-27T13:58:59.408Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "UpdateUserRequest.cs",
               "DocumentMoniker": "C:\\Users\\kevinswa\\source\\repos\\UserService-api\\UserMicroService\\DTOs\\UpdateUserRequest.cs",
               "RelativeDocumentMoniker": "UserMicroService\\DTOs\\UpdateUserRequest.cs",
@@ -82,19 +99,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 5,
               "Title": "UserController.cs",
               "DocumentMoniker": "C:\\Users\\kevinswa\\source\\repos\\UserService-api\\UserMicroService\\Controllers\\UserController.cs",
               "RelativeDocumentMoniker": "UserMicroService\\Controllers\\UserController.cs",
               "ToolTip": "C:\\Users\\kevinswa\\source\\repos\\UserService-api\\UserMicroService\\Controllers\\UserController.cs",
               "RelativeToolTip": "UserMicroService\\Controllers\\UserController.cs",
-              "ViewState": "AQIAAC0AAAAAAAAAAAAkwFIAAAAAAAAA",
+              "ViewState": "AQIAAC0AAAAAAAAAAAAkwEcAAAAJAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-27T06:50:14.293Z"
+              "WhenOpened": "2025-05-27T06:50:14.293Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 2,
               "Title": "EmailMessageDto.cs",
               "DocumentMoniker": "C:\\Users\\kevinswa\\source\\repos\\UserService-api\\UserMicroService\\DTOs\\EmailMessageDto.cs",
               "RelativeDocumentMoniker": "UserMicroService\\DTOs\\EmailMessageDto.cs",
@@ -102,11 +120,12 @@
               "RelativeToolTip": "UserMicroService\\DTOs\\EmailMessageDto.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-26T20:12:04.025Z"
+              "WhenOpened": "2025-05-26T20:12:04.025Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 7,
               "Title": "IUserService.cs",
               "DocumentMoniker": "C:\\Users\\kevinswa\\source\\repos\\UserService-api\\UserMicroService\\Services\\IUserService.cs",
               "RelativeDocumentMoniker": "UserMicroService\\Services\\IUserService.cs",
@@ -118,7 +137,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 8,
               "Title": "IEmailQueueService.cs",
               "DocumentMoniker": "C:\\Users\\kevinswa\\source\\repos\\UserService-api\\UserMicroService\\Services\\IEmailQueueService.cs",
               "RelativeDocumentMoniker": "UserMicroService\\Services\\IEmailQueueService.cs",
@@ -136,34 +155,36 @@
               "RelativeDocumentMoniker": "UserMicroService\\Services\\UserService.cs",
               "ToolTip": "C:\\Users\\kevinswa\\source\\repos\\UserService-api\\UserMicroService\\Services\\UserService.cs",
               "RelativeToolTip": "UserMicroService\\Services\\UserService.cs",
-              "ViewState": "AQIAAIUAAAAAAAAAAAAswKQAAAA2AAAA",
+              "ViewState": "AQIAADsAAAAAAAAAAAAQwF0AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-26T20:09:11.028Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 1,
               "Title": "EmailQueueService.cs",
               "DocumentMoniker": "C:\\Users\\kevinswa\\source\\repos\\UserService-api\\UserMicroService\\Services\\EmailQueueService.cs",
               "RelativeDocumentMoniker": "UserMicroService\\Services\\EmailQueueService.cs",
               "ToolTip": "C:\\Users\\kevinswa\\source\\repos\\UserService-api\\UserMicroService\\Services\\EmailQueueService.cs",
               "RelativeToolTip": "UserMicroService\\Services\\EmailQueueService.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAABAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABcAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-26T20:08:54.479Z"
+              "WhenOpened": "2025-05-26T20:08:54.479Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 3,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\kevinswa\\source\\repos\\UserService-api\\UserMicroService\\Program.cs",
               "RelativeDocumentMoniker": "UserMicroService\\Program.cs",
               "ToolTip": "C:\\Users\\kevinswa\\source\\repos\\UserService-api\\UserMicroService\\Program.cs",
               "RelativeToolTip": "UserMicroService\\Program.cs",
-              "ViewState": "AQIAADUAAAAAAAAAAAAowIIAAAAAAAAA",
+              "ViewState": "AQIAAGMAAAAAAAAAAAAAABAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-26T20:03:32.046Z"
+              "WhenOpened": "2025-05-26T20:03:32.046Z",
+              "EditorCaption": ""
             }
           ]
         },
